@@ -111,9 +111,9 @@ def run_benchmark():
 
 def main():
   """Parses arguments and runs the benchmark."""
-  parser = argparse.matrixrgumentParser(
+  parser = argparse.ArgumentParser(
       description=(
-          "matrix script to analyze the benchmark results and dump the result"
+          "A script to analyze the benchmark results and dump the result"
           " to a JSONL file."
       ),
       formatter_class=argparse.RawTextHelpFormatter,
