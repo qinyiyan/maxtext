@@ -40,7 +40,7 @@ def maybe_write_metrics_file(
       + "".join(random.choices(string.ascii_uppercase + string.digits, k=10))
       + ".jsonl"
   )
-  jsonl_path = metrics_dir + jsonl_name
+  jsonl_path = metrics_dir + "/" + jsonl_name
 
   metrics_data = {
       "metrics": metrics,
