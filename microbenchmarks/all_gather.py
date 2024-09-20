@@ -132,7 +132,7 @@ def main():
       type=str,
       help=(
           "The directory to generate the metrics JSONL file, such as"
-          " `--metrics_jsonl_dir=/tmp/microbenchmark/outputs/metrics.jsonl`"
+          " `--metrics_jsonl_dir=/tmp/microbenchmark/outputs/`"
       ),
   )
 

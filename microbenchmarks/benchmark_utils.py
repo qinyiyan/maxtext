@@ -34,9 +34,7 @@ def maybe_write_metrics_file(
     return
 
   jsonl_name = (
-      "all_gather_metrics_"
-      + "".join(random.choices(string.ascii_uppercase + string.digits, k=10))
-      + ".jsonl"
+      "metrics_report.jsonl"
   )
   jsonl_path = Path(metrics_dir) / jsonl_name
 
