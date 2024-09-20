@@ -61,12 +61,12 @@ def run_benchmark():
     jax.profiler.start_trace(trace_dir)
 
   # Sweep the data size to saturate the bandwidth.
-  matrix_size = 4
+  matrix_size = 1024
   while True:
     try:
       all_reduce_sum(matrix_size)
-      matrix_size += 4
-      if matrix_size > 4:
+      matrix_size += 1024
+      if matrix_size > 10000:
         break
     except MemoryError:
       print(
