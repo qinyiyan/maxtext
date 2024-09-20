@@ -1,13 +1,15 @@
+"""Utility functions for microbenchmarking."""
+
 import datetime
-from pathlib import Path
 import random
 import string
+
 import jax
 import jsonlines
 
 
 def simple_timeit(f, *args, tries=10, task=None):
-  """Simple utility to time a function for multiple runs"""
+  """Simple utility to time a function for multiple runs."""
   assert task is not None
 
   outcomes_ms = []
@@ -25,7 +27,7 @@ def simple_timeit(f, *args, tries=10, task=None):
 
 
 def maybe_write_metrics_file(
-    metrics_dir, metrics, test_start_time, test_end_time
+    metrics_dir, metrics, test_name, test_start_time, test_end_time
 ):
   """Writes all_gather metrics to a JSONL file."""
 
@@ -34,17 +36,19 @@ def maybe_write_metrics_file(
     return
 
   jsonl_name = (
-      "metrics_report.jsonl"
+      f"{test_name}_metrics_"
+      + "".join(random.choices(string.ascii_uppercase + string.digits, k=10))
+      + ".jsonl"
   )
-  jsonl_path = metrics_dir + "/" + jsonl_name
+  jsonl_path = metrics_dir + jsonl_name
 
   metrics_data = {
       "metrics": metrics,
       "dimensions": {
           "testsuite": "microbenchmark",
-          "test_name": "all_gather",
-          "test_start_timestamp": test_start_time,
-          "test_end_timestamp": test_end_time,
+          "test_name": f"{test_name}",
+          "test_start_timestamp": f"{test_start_time}",
+          "test_end_timestamp": f"{test_end_time}",
       },
   }
 

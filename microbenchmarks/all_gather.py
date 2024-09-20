@@ -107,7 +107,7 @@ def run_benchmark():
       "p90_achieved_bandwidth_gbyte_s": p90_achieved_bandwidth_gbyte_s,
   }
   if METRICS_JSONL_DIR:
-    maybe_write_metrics_file(METRICS_JSONL_DIR, metrics, test_start_time, test_end_time)
+    maybe_write_metrics_file(METRICS_JSONL_DIR, metrics, "all_gather", test_start_time, test_end_time)
 
 
 def main():

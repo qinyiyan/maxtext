@@ -99,7 +99,7 @@ def run_benchmark():
   }
   if METRICS_JSONL_DIR:
     maybe_write_metrics_file(
-        METRICS_JSONL_DIR, metrics, test_start_time, test_end_time
+        METRICS_JSONL_DIR, metrics, "all_reduce", test_start_time, test_end_time
     )
 
 
