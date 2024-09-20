@@ -67,7 +67,7 @@ def run_benchmark():
         "t_all_gather_"
         + "".join(random.choices(string.ascii_uppercase + string.digits, k=10))
     )
-    trace_dir = Path(TRACE_BASE_DIR) / trace_name
+    trace_dir = f"{TRACE_BASE_DIR}/{trace_name}"
     jax.profiler.start_trace(str(trace_dir))
 
   test_start_time = datetime.datetime.now().strftime("%Y%m%d%H%M%S")
