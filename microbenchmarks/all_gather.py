@@ -106,9 +106,9 @@ def run_benchmark():
   )
 
   metrics = {
-      "max_achieved_bandwidth_gbyte_s": {max_achieved_bandwidth_gbyte_s},
-      "median_achieved_bandwidth_gbyte_s": {median_achieved_bandwidth_gbyte_s},
-      "p90_achieved_bandwidth_gbyte_s": {p90_achieved_bandwidth_gbyte_s},
+      "max_achieved_bandwidth_gbyte_s": f"{max_achieved_bandwidth_gbyte_s}",
+      "median_achieved_bandwidth_gbyte_s": f"{median_achieved_bandwidth_gbyte_s}",
+      "p90_achieved_bandwidth_gbyte_s": f"{p90_achieved_bandwidth_gbyte_s}",
   }
   if METRICS_JSONL_DIR:
     maybe_write_metrics_file(METRICS_JSONL_DIR, metrics, "all_gather", test_start_time, test_end_time)
