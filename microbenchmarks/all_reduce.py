@@ -5,7 +5,7 @@ import random
 import string
 
 import jax
-from jax.lax import pmap
+from jax import pmap
 import jax.numpy as jnp
 import numpy as np
 from benchmark_utils import maybe_write_metrics_file
