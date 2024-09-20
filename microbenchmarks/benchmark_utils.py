@@ -36,7 +36,7 @@ def maybe_write_metrics_file(
   jsonl_name = (
       "metrics_report.jsonl"
   )
-  jsonl_path = Path(metrics_dir) + jsonl_name
+  jsonl_path = metrics_dir + "/" + jsonl_name
 
   metrics_data = {
       "metrics": metrics,

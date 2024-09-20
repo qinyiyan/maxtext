@@ -32,7 +32,8 @@ def all_gather(matrix_dim):
       mesh, jax.sharding.PartitionSpec(None)
   )
 
-  matrix = jax.device_put(matrix, sharded_sharding)
+  # matrix = jax.device_put(matrix, sharded_sharding)
+  
   
   @partial(jax.jit, out_shardings=unsharded_sharding)
   def unshard_array(input_matrix):
