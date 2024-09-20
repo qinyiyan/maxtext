@@ -35,11 +35,7 @@ def maybe_write_metrics_file(
   if jax.process_index() != 0:
     return
 
-  jsonl_name = (
-      f"{test_name}_metrics_"
-      + "".join(random.choices(string.ascii_uppercase + string.digits, k=10))
-      + ".jsonl"
-  )
+  jsonl_name = "metrics_report.jsonl"
   jsonl_path = metrics_dir + "/" + jsonl_name
 
   metrics_data = {
