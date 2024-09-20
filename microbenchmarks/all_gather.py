@@ -33,7 +33,11 @@ def all_gather(matrix_dim):
   )
 
   # matrix = jax.device_put(matrix, sharded_sharding)
-  
+  arrays = [
+    jax.device_put(matrix[index], d)
+        for d, index in sharded_sharding.addressable_devices_indices_map(matrix.shape).items()]
+
+  matrix = jax.make_array_from_single_device_arrays(matrix.shape, sharded_sharding, arrays)
   
   @partial(jax.jit, out_shardings=unsharded_sharding)
   def unshard_array(input_matrix):

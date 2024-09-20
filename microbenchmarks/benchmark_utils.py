@@ -53,5 +53,5 @@ def maybe_write_metrics_file(
   }
 
   print(f"Writing metrics to JSONL file: {jsonl_path}")
-  with jsonlines.open(jsonl_path, mode="w") as writer:
+  with jsonlines.open(jsonl_path, mode="a") as writer:
     writer.write(metrics_data)
