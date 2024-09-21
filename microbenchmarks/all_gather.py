@@ -77,7 +77,7 @@ def run_benchmark():
   test_start_time = datetime.datetime.now().strftime("%Y%m%d%H%M%S")
   matrix_size = 1024
   try:
-    while matrix_size <= 10000:
+    while matrix_size <= 30000:
       all_gather(matrix_size)
       matrix_size += 1024
   except MemoryError:
