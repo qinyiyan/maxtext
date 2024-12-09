@@ -1,15 +1,15 @@
 """All-gather benchmark."""
+
 import argparse
 import datetime
-from functools import partial
-from pathlib import Path
+import functools
 import random
 import string
 
-import jax
-import numpy as np
 from benchmark_utils import maybe_write_metrics_file
 from benchmark_utils import simple_timeit
+import jax
+import numpy as np
 
 
 TRACE_BASE_DIR = None
@@ -21,7 +21,9 @@ matrix_size_gbyte_to_bandwidth = {}
 def all_gather(matrix_dim):
   """Performs an all_gather operation and calculates the achieved bandwidth."""
   dtype = jax.numpy.bfloat16
-  matrix = jax.numpy.ones((matrix_dim, matrix_dim), dtype=dtype)
+  matrix = jax.numpy.arange(matrix_dim * matrix_dim, dtype=dtype).reshape(
+      matrix_dim, matrix_dim
+  )
 
   selected_devices = jax.devices()
   mesh = jax.sharding.Mesh(selected_devices, "axis")
@@ -32,14 +34,18 @@ def all_gather(matrix_dim):
       mesh, jax.sharding.PartitionSpec(None)
   )
 
-  # matrix = jax.device_put(matrix, sharded_sharding)
   arrays = [
-    jax.device_put(matrix[index], d)
-        for d, index in sharded_sharding.addressable_devices_indices_map(matrix.shape).items()]
+      jax.device_put(matrix[index], d)
+      for d, index in sharded_sharding.addressable_devices_indices_map(
+          matrix.shape
+      ).items()
+  ]
 
-  matrix = jax.make_array_from_single_device_arrays(matrix.shape, sharded_sharding, arrays)
-  
-  @partial(jax.jit, out_shardings=unsharded_sharding)
+  matrix = jax.make_array_from_single_device_arrays(
+      matrix.shape, sharded_sharding, arrays
+  )
+
+  @functools.partial(jax.jit, out_shardings=unsharded_sharding)
   def unshard_array(input_matrix):
     return input_matrix
 
@@ -62,14 +68,14 @@ def all_gather(matrix_dim):
   )
 
 
+# TODO(qinyiyan): Merge common code with all_reduce.py.
 def run_benchmark():
   """Runs the all_gather benchmark and saves traces."""
 
   trace_dir = None
   if TRACE_BASE_DIR:
-    trace_name = (
-        "t_all_gather_"
-        + "".join(random.choices(string.ascii_uppercase + string.digits, k=10))
+    trace_name = "t_all_gather_" + "".join(
+        random.choices(string.ascii_uppercase + string.digits, k=10)
     )
     trace_dir = f"{TRACE_BASE_DIR}/{trace_name}"
     jax.profiler.start_trace(str(trace_dir))
@@ -85,10 +91,8 @@ def run_benchmark():
         "MemoryError: Failed to create or process matrix of size "
         f"{matrix_size} x {matrix_size}.\n"
     )
-  except Exception as e:
-    print(
-        f"Exception: {e} occurred at size {matrix_size} x {matrix_size}.\n"
-    )
+  except Exception as e:  # pylint: disable=broad-exception-caught
+    print(f"Exception: {e} occurred at size {matrix_size} x {matrix_size}.\n")
 
   if TRACE_BASE_DIR:
     jax.profiler.stop_trace()
@@ -111,7 +115,9 @@ def run_benchmark():
       "p90_achieved_bandwidth_gbyte_s": p90_achieved_bandwidth_gbyte_s,
   }
   if METRICS_JSONL_DIR:
-    maybe_write_metrics_file(METRICS_JSONL_DIR, metrics, "all_gather", test_start_time, test_end_time)
+    maybe_write_metrics_file(
+        METRICS_JSONL_DIR, metrics, "all_gather", test_start_time, test_end_time
+    )
 
 
 def main():

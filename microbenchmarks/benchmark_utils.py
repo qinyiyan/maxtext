@@ -1,8 +1,6 @@
 """Utility functions for microbenchmarking."""
 
 import datetime
-import random
-import string
 
 import jax
 import jsonlines
@@ -27,9 +25,9 @@ def simple_timeit(f, *args, tries=10, task=None):
 
 
 def maybe_write_metrics_file(
-    metrics_dir, metrics, test_name, test_start_time, test_end_time
+    metrics_dir, metrics, metadata, test_name, test_start_time, test_end_time
 ):
-  """Writes all_gather metrics to a JSONL file."""
+  """Writes metrics to a JSONL file to be consumed by the XLML metrics pipeline."""
 
   # Only write metrics from one host.
   if jax.process_index() != 0:
@@ -37,15 +35,15 @@ def maybe_write_metrics_file(
 
   jsonl_name = "metrics_report.jsonl"
   jsonl_path = metrics_dir + "/" + jsonl_name
-
+  metadata.update({
+      "testsuite": "microbenchmark",
+      "test_name": f"{test_name}",
+      "test_start_timestamp": f"{test_start_time}",
+      "test_end_timestamp": f"{test_end_time}",
+  })
   metrics_data = {
       "metrics": metrics,
-      "dimensions": {
-          "testsuite": "microbenchmark",
-          "test_name": f"{test_name}",
-          "test_start_timestamp": f"{test_start_time}",
-          "test_end_timestamp": f"{test_end_time}",
-      },
+      "dimensions": metadata,
   }
 
   print(f"Writing metrics to JSONL file: {jsonl_path}")
