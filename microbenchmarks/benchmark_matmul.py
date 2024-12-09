@@ -191,9 +191,7 @@ def single_host_naive_matmul_calculate_metrics(
   return metadata, metrics
 
 
-def collective_matmul_one_direction_benchmark(
-    m: int, k: int, n: int
-) -> Dict[str, Any]:
+def collective_matmul_one_direction(m: int, k: int, n: int) -> Dict[str, Any]:
   """Benchmarks the collective matmul that does permute in one direction."""
 
   def collective_matmul(lhs, rhs):
@@ -252,7 +250,7 @@ def collective_matmul_one_direction_benchmark(
   return {"average_time_ms": average_time_ms}
 
 
-def collective_matmul_one_direction_benchmark_calculate_metrics(
+def collective_matmul_one_direction_calculate_metrics(
     m: int, k: int, n: int, average_time_ms: float
 ) -> Dict[str, Any]:
   """Calculates the metrics for the collective matmul one direction benchmark."""
@@ -277,9 +275,7 @@ def collective_matmul_one_direction_benchmark_calculate_metrics(
   return metadata, metrics
 
 
-def collective_matmul_two_direction_benchmark(
-    m: int, k: int, n: int
-) -> Dict[str, Any]:
+def collective_matmul_two_directions(m: int, k: int, n: int) -> Dict[str, Any]:
   """Benchmarks the collective matmul that does permute in two directions."""
 
   def collective_matmul(activations, weights):
@@ -375,7 +371,7 @@ def collective_matmul_two_direction_benchmark(
   return {"average_time_ms": average_time_ms}
 
 
-def collective_matmul_two_direction_benchmark_calculate_metrics(
+def collective_matmul_two_directions_calculate_metrics(
     m: int, k: int, n: int, average_time_ms: float
 ) -> Dict[str, Any]:
   """Calculates the metrics for the collective matmul two direction benchmark."""

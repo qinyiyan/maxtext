@@ -6,7 +6,7 @@ Sample usage (on TPU vm):
 
 import argparse
 import csv
-from datetime import datetime
+import datetime
 import importlib
 import inspect
 import itertools
@@ -231,9 +231,13 @@ def run_single_benchmark(benchmark_config: Dict[str, Any]):
   for benchmark_param in benchmark_params:
     benchmark_param = preprocess_benchmark_param(benchmark_param)
     print(f"Running benchmark: {benchmark_name} with params: {benchmark_param}")
-    test_start_time = datetime.utcnow().isoformat() + "Z"  # "Z" indicates UTC
+    test_start_time = (
+        datetime.datetime.now(tz=datetime.timezone.utc).isoformat() + "Z"
+    )  # "Z" indicates UTC
     benchmark_results = benchmark_func(**benchmark_param)
-    test_end_time = datetime.utcnow().isoformat() + "Z"
+    test_end_time = (
+        datetime.datetime.now(tz=datetime.timezone.utc).isoformat() + "Z"
+    )
 
     # Filter benchmark_results to include only keys present in
     # calculate_metrics_func
