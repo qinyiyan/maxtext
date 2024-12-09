@@ -9,6 +9,7 @@ benchmarks:
   - {batch: 2, seq_len: 512, d_model: 1024, num_heads: 1, causal: true, scale: true}
   trace_dir: "/tmp/microbenchmarks/attention"
   csv_path: "/tmp/microbenchmarks/attention"
+  xlml_metrics_dir: "/tmp/microbenchmarks/attention"
 - benchmark_name: "pallas_flash_attention"
   benchmark_sweep_params:
   - {batch_range: {start: 1, end: 4, multiplier: 2}, seq_len: 512, d_model: 1024, num_heads: 1, causal: true}
@@ -18,6 +19,7 @@ benchmarks:
   - {batch: 2, seq_len: 512, d_model: 1024, num_heads: 1, causal: false}
   trace_dir: "/tmp/microbenchmarks/attention"
   csv_path: "/tmp/microbenchmarks/attention"
+  xlml_metrics_dir: "/tmp/microbenchmarks/attention"
 - benchmark_name: "splash_attention"
   benchmark_sweep_params:
   - {batch_range: {start: 1, end: 4, multiplier: 2}, seq_len: 512, d_model: 1024, num_heads: 1, causal: true}
@@ -27,6 +29,7 @@ benchmarks:
   - {batch: 2, seq_len: 512, d_model: 1024, num_heads: 1, causal: false}
   trace_dir: "/tmp/microbenchmarks/attention"
   csv_path: "/tmp/microbenchmarks/attention"
+  xlml_metrics_dir: "/tmp/microbenchmarks/attention"
 - benchmark_name: "flax_nnx_attention"
   benchmark_sweep_params:
   - {batch_range: {start: 1, end: 4, multiplier: 2}, seq_len: 512, d_model: 1024, num_heads: 1}
@@ -35,6 +38,7 @@ benchmarks:
   - {batch: 2, seq_len: 512, d_model: 2048, num_heads_range: {start: 1, end: 16, multiplier: 2}}
   trace_dir: "/tmp/microbenchmarks/attention"
   csv_path: "/tmp/microbenchmarks/attention"
+  xlml_metrics_dir: "/tmp/microbenchmarks/attention"
 - benchmark_name: "flax_linen_attention"
   benchmark_sweep_params:
   - {batch_range: {start: 1, end: 4, multiplier: 2}, seq_len: 512, d_model: 1024, num_heads: 1}
@@ -43,6 +47,7 @@ benchmarks:
   - {batch: 2, seq_len: 512, d_model: 2048, num_heads_range: {start: 1, end: 16, multiplier: 2}}
   trace_dir: "/tmp/microbenchmarks/attention"
   csv_path: "/tmp/microbenchmarks/attention"
+  xlml_metrics_dir: "/tmp/microbenchmarks/attention"
 - benchmark_name: "keras_attention"
   benchmark_sweep_params:
   - {batch_range: {start: 1, end: 4, multiplier: 2}, seq_len: 512, d_model: 1024, num_heads: 1}
@@ -51,3 +56,4 @@ benchmarks:
   - {batch: 2, seq_len: 512, d_model: 2048, num_heads_range: {start: 1, end: 16, multiplier: 2}}
   trace_dir: "/tmp/microbenchmarks/attention"
   csv_path: "/tmp/microbenchmarks/attention"
+  xlml_metrics_dir: "/tmp/microbenchmarks/attention"
