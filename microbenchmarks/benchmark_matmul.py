@@ -11,7 +11,7 @@ with the compute. The permute is done in two directions.
 """
 
 import os
-from typing import Any, Dict
+from typing import Any, Dict, Tuple
 
 
 # pylint: disable=g-importing-member
@@ -50,6 +50,20 @@ def create_mesh() -> Mesh:
   """Creates a mesh."""
   mesh = Mesh(np.array(jax.devices()), axis_names="i")
   return mesh
+
+
+def get_metrics_helper(
+    params: Dict[str, Any],
+) -> Tuple[Dict[str, Any], Dict[str, Any]]:
+  """Helper function to build the metrics and metadata for the benchmark."""
+  metrics_keys = {"average_time_ms"}
+  metadata = {
+      key: value
+      for key, value in params
+      if value is not None and key not in metrics_keys
+  }
+  metrics = {key: value for key, value in params if key in metrics_keys}
+  return metadata, metrics
 
 
 def naive_matmul(m: int, k: int, n: int) -> Dict[str, Any]:
@@ -95,17 +109,8 @@ def naive_matmul_calculate_metrics(
 ) -> Dict[str, Any]:
   """Calculates the metrics for the naive matmul benchmark."""
   # Build dictionary of all the parameters in the function
-  metrics_keys = {"average_time_ms"}
-  params = {
-      key: value
-      for key, value in locals().items()
-      if value is not None and key not in metrics_keys
-  }
-  metrics = {
-      key: value
-      for key, value in locals().items()
-      if value is not None and key in metrics_keys
-  }
+  params = locals().items()
+  metadata, metrics = get_metrics_helper(params)
 
   # Calculate FLOPs
   total_flops = 2 * m * k * n  # Total floating-point operations
@@ -126,7 +131,7 @@ def naive_matmul_calculate_metrics(
       "data_transfer_gbyte_sec": data_transfer_gbyte_sec,
   })
   metrics = {key: value for key, value in metrics.items() if value is not None}
-  return params, metrics
+  return metadata, metrics
 
 
 def single_host_naive_matmul(m: int, k: int, n: int) -> Dict[str, Any]:
@@ -161,17 +166,8 @@ def single_host_naive_matmul_calculate_metrics(
 ) -> Dict[str, Any]:
   """Calculates the metrics for the single host naive matmul benchmark."""
   # Build dictionary of all the parameters in the function
-  metrics_keys = {"average_time_ms"}
-  params = {
-      key: value
-      for key, value in locals().items()
-      if value is not None and key not in metrics_keys
-  }
-  metrics = {
-      key: value
-      for key, value in locals().items()
-      if value is not None and key in metrics_keys
-  }
+  params = locals().items()
+  metadata, metrics = get_metrics_helper(params)
 
   # Calculate FLOPs
   total_flops = 2 * m * k * n  # Total floating-point operations
@@ -192,7 +188,7 @@ def single_host_naive_matmul_calculate_metrics(
       "data_transfer_gbyte_sec": data_transfer_gbyte_sec,
   })
   metrics = {key: value for key, value in metrics.items() if value is not None}
-  return params, metrics
+  return metadata, metrics
 
 
 def collective_matmul_one_direction_benchmark(
@@ -261,17 +257,8 @@ def collective_matmul_one_direction_benchmark_calculate_metrics(
 ) -> Dict[str, Any]:
   """Calculates the metrics for the collective matmul one direction benchmark."""
   # Build dictionary of all the parameters in the function
-  metrics_keys = {"average_time_ms"}
-  params = {
-      key: value
-      for key, value in locals().items()
-      if value is not None and key not in metrics_keys
-  }
-  metrics = {
-      key: value
-      for key, value in locals().items()
-      if value is not None and key in metrics_keys
-  }
+  params = locals().items()
+  metadata, metrics = get_metrics_helper(params)
 
   # Calculate FLOPs
   total_flops = 2 * m * k * n  # Total floating-point operations
@@ -287,7 +274,7 @@ def collective_matmul_one_direction_benchmark_calculate_metrics(
       "tflops_per_sec": flops_per_sec / 1e12,
   })
   metrics = {key: value for key, value in metrics.items() if value is not None}
-  return params, metrics
+  return metadata, metrics
 
 
 def collective_matmul_two_direction_benchmark(
@@ -393,17 +380,8 @@ def collective_matmul_two_direction_benchmark_calculate_metrics(
 ) -> Dict[str, Any]:
   """Calculates the metrics for the collective matmul two direction benchmark."""
   # Build dictionary of all the parameters in the function
-  metrics_keys = {"average_time_ms"}
-  params = {
-      key: value
-      for key, value in locals().items()
-      if value is not None and key not in metrics_keys
-  }
-  metrics = {
-      key: value
-      for key, value in locals().items()
-      if value is not None and key in metrics_keys
-  }
+  params = locals().items()
+  metadata, metrics = get_metrics_helper(params)
 
   # Calculate FLOPs
   total_flops = 2 * m * k * n  # Total floating-point operations
@@ -419,7 +397,7 @@ def collective_matmul_two_direction_benchmark_calculate_metrics(
       "tflops_per_sec": flops_per_sec / 1e12,
   })
   metrics = {key: value for key, value in metrics.items() if value is not None}
-  return params, metrics
+  return metadata, metrics
 
 
 def multilayer_collective_matmul(m: int, k: int, n: int) -> Dict[str, Any]:
@@ -472,17 +450,8 @@ def multilayer_collective_matmul_calculate_metrics(
 ) -> Dict[str, Any]:
   """Calculates the metrics for the multilayer collective matmul benchmark."""
   # Build dictionary of all the parameters in the function
-  metrics_keys = {"average_time_ms"}
-  params = {
-      key: value
-      for key, value in locals().items()
-      if value is not None and key not in metrics_keys
-  }
-  metrics = {
-      key: value
-      for key, value in locals().items()
-      if value is not None and key in metrics_keys
-  }
+  params = locals().items()
+  metadata, metrics = get_metrics_helper(params)
 
   # Calculate FLOPs
   per_layer_flops = 2 * m * k * k  # Total floating-point operations
@@ -500,4 +469,4 @@ def multilayer_collective_matmul_calculate_metrics(
       "tflops_per_sec": flops_per_sec / 1e12,
   })
   metrics = {key: value for key, value in metrics.items() if value is not None}
-  return params, metrics
+  return metadata, metrics

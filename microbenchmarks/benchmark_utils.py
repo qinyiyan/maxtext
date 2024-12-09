@@ -1,10 +1,10 @@
 """Utility functions for microbenchmarking."""
 
 import datetime
+import os
 
 import jax
 import jsonlines
-
 
 def simple_timeit(f, *args, tries=10, task=None):
   """Simple utility to time a function for multiple runs."""
@@ -45,6 +45,8 @@ def maybe_write_metrics_file(
       "metrics": metrics,
       "dimensions": metadata,
   }
+  # Ensure the directory exists
+  os.makedirs(os.path.dirname(jsonl_path), exist_ok=True)
 
   print(f"Writing metrics to JSONL file: {jsonl_path}")
   with jsonlines.open(jsonl_path, mode="a") as writer:

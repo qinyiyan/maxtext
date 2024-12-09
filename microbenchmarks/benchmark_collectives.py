@@ -2,7 +2,7 @@
 
 # pylint: disable=g-importing-member
 from functools import partial
-from typing import Any, Dict
+from typing import Any, Dict, Tuple
 
 from benchmark_utils import simple_timeit
 import jax
@@ -37,6 +37,21 @@ def create_mesh(
     )
     mesh = Mesh(mesh_devices, "ici")
   return mesh, dcn_parallelism, ici_parallelism
+
+
+def get_metrics_helper(
+    params: Dict[str, Any],
+) -> Tuple[Dict[str, Any], Dict[str, Any]]:
+  """Helper function to build the metrics and metadata for the benchmark."""
+  metrics_keys = ["ici_average_time_ms", "dcn_average_time_ms"]
+  metadata = {
+      key: value
+      for key, value in params
+      if value is not None and key not in metrics_keys
+  }
+  metadata["dtype"] = dtype.dtype.itemsize
+  metrics = {key: value for key, value in params if key in metrics_keys}
+  return metadata, metrics
 
 
 def psum_benchmark(
@@ -106,13 +121,8 @@ def psum_benchmark_calculate_metrics(
 ) -> Dict[str, Any]:
   """Calculates the metrics for the psum benchmark."""
   # Build dictionary of all the parameters in the function
-  metrics_keys = ["ici_average_time_ms", "dcn_average_time_ms"]
-  params = {
-      key: value for key, value in locals().items() if key not in metrics_keys
-  }
-  metrics = {
-      key: value for key, value in locals().items() if key in metrics_keys
-  }
+  params = locals().items()
+  metadata, metrics = get_metrics_helper(params)
 
   matrix_size_gbyte = matrix_dim * matrix_dim * dtype.dtype.itemsize / 1e9
   dcn_bandwidth_gbyte_s = ici_bandwidth_gbyte_s = None
@@ -154,7 +164,7 @@ def psum_benchmark_calculate_metrics(
       "ici_bandwidth_gbyte_s": ici_bandwidth_gbyte_s,
       "dcn_bandwidth_gbyte_s": dcn_bandwidth_gbyte_s,
   })
-  return params, metrics
+  return metadata, metrics
 
 
 def psum_scatter_benchmark(
@@ -227,13 +237,8 @@ def psum_scatter_benchmark_calculate_metrics(
 ) -> Dict[str, Any]:
   """Calculates the metrics for the psum_scatter benchmark."""
   # Build dictionary of all the parameters in the function
-  metrics_keys = ["ici_average_time_ms", "dcn_average_time_ms"]
-  params = {
-      key: value for key, value in locals().items() if key not in metrics_keys
-  }
-  metrics = {
-      key: value for key, value in locals().items() if key in metrics_keys
-  }
+  params = locals().items()
+  metadata, metrics = get_metrics_helper(params)
 
   matrix_size_gbyte = matrix_dim * matrix_dim * dtype.dtype.itemsize / 1e9
   dcn_bandwidth_gbyte_s = ici_bandwidth_gbyte_s = None
@@ -276,7 +281,7 @@ def psum_scatter_benchmark_calculate_metrics(
       "dcn_bandwidth_gbyte_s": dcn_bandwidth_gbyte_s,
   })
   metrics = {key: value for key, value in metrics.items() if value is not None}
-  return params, metrics
+  return metadata, metrics
 
 
 def all_gather_benchmark(
@@ -350,13 +355,8 @@ def all_gather_benchmark_calculate_metrics(
 ) -> Dict[str, Any]:
   """Calculates the metrics for the all_gather benchmark."""
   # Build dictionary of all the parameters in the function
-  metrics_keys = ["ici_average_time_ms", "dcn_average_time_ms"]
-  params = {
-      key: value for key, value in locals().items() if key not in metrics_keys
-  }
-  metrics = {
-      key: value for key, value in locals().items() if key in metrics_keys
-  }
+  params = locals().items()
+  metadata, metrics = get_metrics_helper(params)
 
   matrix_size_gbyte = matrix_dim * matrix_dim * dtype.dtype.itemsize / 1e9
   dcn_bandwidth_gbyte_s = ici_bandwidth_gbyte_s = None
@@ -398,7 +398,7 @@ def all_gather_benchmark_calculate_metrics(
       "dcn_bandwidth_gbyte_s": dcn_bandwidth_gbyte_s,
   })
   metrics = {key: value for key, value in metrics.items() if value is not None}
-  return params, metrics
+  return metadata, metrics
 
 
 def ppermute_benchmark(
@@ -474,13 +474,8 @@ def ppermute_benchmark_calculate_metrics(
 ) -> Dict[str, Any]:
   """Calculates the metrics for the ppermute benchmark."""
   # Build dictionary of all the parameters in the function
-  metrics_keys = ["ici_average_time_ms", "dcn_average_time_ms"]
-  params = {
-      key: value for key, value in locals().items() if key not in metrics_keys
-  }
-  metrics = {
-      key: value for key, value in locals().items() if key in metrics_keys
-  }
+  params = locals().items()
+  metadata, metrics = get_metrics_helper(params)
 
   matrix_size_gbyte = matrix_dim * matrix_dim * dtype.dtype.itemsize / 1e9
   dcn_bandwidth_gbyte_s = ici_bandwidth_gbyte_s = None
@@ -513,7 +508,7 @@ def ppermute_benchmark_calculate_metrics(
       "ici_bandwidth_gbyte_s": ici_bandwidth_gbyte_s,
       "dcn_bandwidth_gbyte_s": dcn_bandwidth_gbyte_s,
   })
-  return params, metrics
+  return metadata, metrics
 
 
 def all_to_all_benchmark(
@@ -591,13 +586,8 @@ def all_to_all_benchmark_calculate_metrics(
 ) -> Dict[str, Any]:
   """Calculates the metrics for the all_to_all benchmark."""
   # Build dictionary of all the parameters in the function
-  metrics_keys = ["ici_average_time_ms", "dcn_average_time_ms"]
-  params = {
-      key: value for key, value in locals().items() if key not in metrics_keys
-  }
-  metrics = {
-      key: value for key, value in locals().items() if key in metrics_keys
-  }
+  params = locals().items()
+  metadata, metrics = get_metrics_helper(params)
 
   matrix_size_gbyte = matrix_dim * matrix_dim * dtype.dtype.itemsize / 1e9
   dcn_bandwidth_gbyte_s = ici_bandwidth_gbyte_s = None
@@ -638,4 +628,4 @@ def all_to_all_benchmark_calculate_metrics(
       "dcn_bandwidth_gbyte_s": dcn_bandwidth_gbyte_s,
   })
   metrics = {key: value for key, value in metrics.items() if value is not None}
-  return params, metrics
+  return metadata, metrics

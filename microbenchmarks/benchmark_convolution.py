@@ -75,15 +75,16 @@ def convolve_common_calculate_metrics(
 ) -> Dict[str, Any]:
   """Helper function to calculate the metrics for the convolution benchmarks."""
   # Build dictionary of all the parameters in the function
+  params = locals().items()
   metrics_keys = {"average_time_ms"}
-  params = {
+  metadata = {
       key: value
-      for key, value in locals().items()
+      for key, value in params
       if value is not None and key not in metrics_keys
   }
   metrics = {
       key: value
-      for key, value in locals().items()
+      for key, value in params
       if value is not None and key in metrics_keys
   }
 
@@ -109,7 +110,7 @@ def convolve_common_calculate_metrics(
       "gflops_per_sec": flops_per_sec / 1e9,
   })
   metrics = {key: value for key, value in metrics.items() if value is not None}
-  return params, metrics
+  return metadata, metrics
 
 
 def numpy_convolve(
@@ -309,15 +310,16 @@ def lax_conv_general_dilated_calculate_metrics(
 ) -> Dict[str, Any]:
   """Calculates the metrics for the lax_conv_general_dilated benchmark."""
   # Build dictionary of all the parameters in the function
+  params = locals().items()
   metrics_keys = {"average_time_ms"}
-  params = {
+  metadata = {
       key: value
-      for key, value in locals().items()
+      for key, value in params
       if value is not None and key not in metrics_keys
   }
   metrics = {
       key: value
-      for key, value in locals().items()
+      for key, value in params
       if value is not None and key in metrics_keys
   }
 
@@ -347,4 +349,4 @@ def lax_conv_general_dilated_calculate_metrics(
   metrics.update({
       "gflops_per_sec": flops_per_sec / 1e9,
   })
-  return params, metrics
+  return metadata, metrics

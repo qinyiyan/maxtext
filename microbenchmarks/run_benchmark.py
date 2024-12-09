@@ -6,7 +6,7 @@ Sample usage (on TPU vm):
 
 import argparse
 import csv
-import datetime
+from datetime import datetime
 import importlib
 import inspect
 import itertools

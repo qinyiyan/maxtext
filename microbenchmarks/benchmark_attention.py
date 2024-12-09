@@ -55,6 +55,20 @@ def generate_qkv(
   return q, k, v
 
 
+def get_metrics_helper(
+    params: Dict[str, Any],
+) -> Tuple[Dict[str, Any], Dict[str, Any]]:
+  """Helper function to build the metrics and metadata for the benchmark."""
+  metrics_keys = {"average_time_ms"}
+  metadata = {
+      key: value
+      for key, value in params
+      if value is not None and key not in metrics_keys
+  }
+  metrics = {key: value for key, value in params if key in metrics_keys}
+  return metadata, metrics
+
+
 def naive_attention_benchmark(
     batch: int,
     seq_len: int,
@@ -116,16 +130,8 @@ def naive_attention_benchmark_calculate_metrics(
 ) -> Dict[str, Any]:
   """Gathers metrics for the naive attention benchmark."""
   # Build dictionary of all the parameters in the function
-  metrics_keys = {"average_time_ms"}
-  params = {
-      key: value
-      for key, value in locals().items()
-      if value is not None and key not in metrics_keys
-  }
-  metrics = {
-      key: value for key, value in locals().items() if key in metrics_keys
-  }
-  return params, metrics
+  params = locals().items()
+  return get_metrics_helper(params)
 
 
 def pallas_flash_attention_benchmark(
@@ -166,18 +172,8 @@ def pallas_flash_attention_benchmark_calculate_metrics(
 ) -> Dict[str, Any]:
   """Gathers metrics for the pallas flash attention benchmark."""
   # Build dictionary of all the parameters in the function
-  metrics_keys = {"average_time_ms"}
-  params = {
-      key: value
-      for key, value in locals().items()
-      if value is not None and key not in metrics_keys
-  }
-  metrics = {
-      key: value
-      for key, value in locals().items()
-      if value is not None and key in metrics_keys
-  }
-  return params, metrics
+  params = locals().items()
+  return get_metrics_helper(params)
 
 
 def splash_attention_benchmark(
@@ -249,16 +245,8 @@ def splash_attention_benchmark_calculate_metrics(
 ) -> Dict[str, Any]:
   """Gathers metrics for the splash attention benchmark."""
   # Build dictionary of all the parameters in the function
-  metrics_keys = {"average_time_ms"}
-  params = {
-      key: value
-      for key, value in locals().items()
-      if value is not None and key not in metrics_keys
-  }
-  metrics = {
-      key: value for key, value in locals().items() if key in metrics_keys
-  }
-  return params, metrics
+  params = locals().items()
+  return get_metrics_helper(params)
 
 
 def flax_nnx_attention_benchmark(
@@ -302,16 +290,8 @@ def flax_nnx_attention_benchmark_calculate_metrics(
 ) -> Dict[str, Any]:
   """Gathers metrics for the flax nnx attention benchmark."""
   # Build dictionary of all the parameters in the function
-  metrics_keys = {"average_time_ms"}
-  params = {
-      key: value
-      for key, value in locals().items()
-      if value is not None and key not in metrics_keys
-  }
-  metrics = {
-      key: value for key, value in locals().items() if key in metrics_keys
-  }
-  return params, metrics
+  params = locals().items()
+  return get_metrics_helper(params)
 
 
 def flax_linen_attention_benchmark(
@@ -354,16 +334,8 @@ def flax_linen_attention_benchmark_calculate_metrics(
 ) -> Dict[str, Any]:
   """Gathers metrics for the flax linen attention benchmark."""
   # Build dictionary of all the parameters in the function
-  metrics_keys = {"average_time_ms"}
-  params = {
-      key: value
-      for key, value in locals().items()
-      if value is not None and key not in metrics_keys
-  }
-  metrics = {
-      key: value for key, value in locals().items() if key in metrics_keys
-  }
-  return params, metrics
+  params = locals().items()
+  return get_metrics_helper(params)
 
 
 def keras_attention_benchmark(
@@ -416,13 +388,5 @@ def keras_attention_benchmark_calculate_metrics(
 ) -> Dict[str, Any]:
   """Gathers metrics for the keras attention benchmark."""
   # Build dictionary of all the parameters in the function
-  metrics_keys = {"average_time_ms"}
-  params = {
-      key: value
-      for key, value in locals().items()
-      if value is not None and key not in metrics_keys
-  }
-  metrics = {
-      key: value for key, value in locals().items() if key in metrics_keys
-  }
-  return params, metrics
+  params = locals().items()
+  return get_metrics_helper(params)
