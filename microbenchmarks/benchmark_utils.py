@@ -6,6 +6,7 @@ import os
 import jax
 import jsonlines
 
+
 def simple_timeit(f, *args, tries=10, task=None):
   """Simple utility to time a function for multiple runs."""
   assert task is not None

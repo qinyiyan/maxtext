@@ -49,7 +49,7 @@ def get_metrics_helper(
       for key, value in params
       if value is not None and key not in metrics_keys
   }
-  metadata["dtype"] = dtype.dtype.itemsize
+  metadata["dtype"] = metadata["dtype"].dtype.itemsize
   metrics = {key: value for key, value in params if key in metrics_keys}
   return metadata, metrics
 
