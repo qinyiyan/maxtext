@@ -46,6 +46,10 @@ def maybe_write_metrics_file(
       "metrics": metrics,
       "dimensions": metadata,
   }
+  # Make sure the metadata value is a string.
+  for key, value in metadata.items():
+    metadata[key] = str(value)
+
   # Ensure the directory exists
   os.makedirs(os.path.dirname(jsonl_path), exist_ok=True)
 
