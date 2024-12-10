@@ -1,4 +1,3 @@
-# Configs for collectives
 benchmarks:
 - benchmark_name: ppermute
   benchmark_sweep_params:
@@ -20,8 +19,6 @@ benchmarks:
   benchmark_sweep_params:
   - {matrix_dim_range: {start: 1024, end: 30000, multiplier: 2}, dtype: "bfloat16", dcn_size_range: 1, ici_size_range: 4}
   xlml_metrics_dir: "/tmp/microbenchmarks/outputs"
-# Configs for matmul
-benchmarks:
 - benchmark_name: "naive_matmul"
   benchmark_sweep_params:
   - {m: 1024, k: 1024, n: 1024}
@@ -72,8 +69,6 @@ benchmarks:
   - {m: 32768, k: 32768, n: 32768}
   - {m: 65536, k: 65536, n: 65536}  
   xlml_metrics_dir: "/tmp/microbenchmarks/outputs"
-# Configs for attention
-benchmarks:
 - benchmark_name: "naive_attention"
   benchmark_sweep_params:
   - {batch_range: {start: 1, end: 4, multiplier: 2}, seq_len: 512, d_model: 1024, num_heads: 1, causal: true, scale: false}
