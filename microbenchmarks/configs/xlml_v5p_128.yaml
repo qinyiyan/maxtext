@@ -29,13 +29,6 @@ benchmarks:
   - {m: 32768, k: 32768, n: 32768}
   - {m: 65536, k: 65536, n: 65536}  
   xlml_metrics_dir: "/tmp/microbenchmarks/outputs"
-- benchmark_name: "single_host_naive_matmul"
-  benchmark_sweep_params:
-  - {m: 1024, k: 1024, n: 1024}
-  - {m: 2048, k: 2048, n: 2048}
-  - {m: 4096, k: 4096, n: 4096}
-  - {m: 8192, k: 8192, n: 8192}
-  xlml_metrics_dir: "/tmp/microbenchmarks/outputs"
 - benchmark_name: "multilayer_collective_matmul"
   benchmark_sweep_params:
   - {m: 1024, k: 1024, n: 1024}
