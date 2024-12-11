@@ -27,7 +27,6 @@ benchmarks:
   - {m: 8192, k: 8192, n: 8192}
   - {m: 16384, k: 16384, n: 16384}
   - {m: 32768, k: 32768, n: 32768}
-  - {m: 65536, k: 65536, n: 65536}  
   xlml_metrics_dir: "/tmp/microbenchmarks/outputs"
 - benchmark_name: "multilayer_collective_matmul"
   benchmark_sweep_params:
@@ -37,7 +36,6 @@ benchmarks:
   - {m: 8192, k: 8192, n: 8192}
   - {m: 16384, k: 16384, n: 16384}
   - {m: 32768, k: 32768, n: 32768}
-  - {m: 65536, k: 65536, n: 65536}  
   xlml_metrics_dir: "/tmp/microbenchmarks/outputs"
 - benchmark_name: "collective_matmul_one_direction"
   benchmark_sweep_params:
@@ -47,7 +45,6 @@ benchmarks:
   - {m: 8192, k: 8192, n: 8192}
   - {m: 16384, k: 16384, n: 16384}
   - {m: 32768, k: 32768, n: 32768}
-  - {m: 65536, k: 65536, n: 65536}  
   xlml_metrics_dir: "/tmp/microbenchmarks/outputs"
 - benchmark_name: "collective_matmul_two_directions"
   benchmark_sweep_params:
@@ -57,7 +54,6 @@ benchmarks:
   - {m: 8192, k: 8192, n: 8192}
   - {m: 16384, k: 16384, n: 16384}
   - {m: 32768, k: 32768, n: 32768}
-  - {m: 65536, k: 65536, n: 65536}  
   xlml_metrics_dir: "/tmp/microbenchmarks/outputs"
 - benchmark_name: "naive_attention"
   benchmark_sweep_params:
