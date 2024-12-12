@@ -326,7 +326,8 @@ def all_gather_benchmark(
   if ici_size > 1:
 
     @partial(
-        shard_map, mesh=mesh, in_specs=P(None, "ici"), out_specs=P(None, "ici")
+        shard_map, mesh=mesh, in_specs=P(None, None), out_specs=P(None, None),
+        check_rep=False,
     )
     def all_gather_ici_op(x):
       return jax.lax.all_gather(x, "ici", tiled=True)
@@ -554,7 +555,8 @@ def all_to_all_benchmark(
   if ici_size > 1:
 
     @partial(
-        shard_map, mesh=mesh, in_specs=P(None, "ici"), out_specs=P(None, "ici")
+        shard_map, mesh=mesh, in_specs=P(None, None), out_specs=P(None, None),
+        check_rep=False,
     )
     def all_to_all_ici_op(x):
       return jax.lax.all_to_all(
