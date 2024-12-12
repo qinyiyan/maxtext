@@ -124,6 +124,15 @@ def preprocess_benchmark_param(
       benchmark_param["dtype"] = dtype_mapping[dtype_str]
     else:
       raise ValueError(f"Unsupported dtype: {dtype_str}")
+
+  # Handle "SAME_AS_" parameters.
+  for key, value in benchmark_param.items():
+    if isinstance(value, str) and value.startswith("SAME_AS_"):
+      try:
+        same_as_key = value.split("SAME_AS_")[1]
+        benchmark_param[key] = benchmark_param[same_as_key]
+      except KeyError:
+        print(f"Error: Key '{same_as_key}' not found for '{key}'")
   return benchmark_param
 
 
@@ -139,17 +148,22 @@ def generate_benchmark_params_sweeping(
         key = key[:-6]  # Remove the last 6 characters (i.e., '_range')
 
       if isinstance(value, dict):
-        # Extract the range and multiplier
+        # Extract the range and multiplier, or increase_by value.
         start = value.get("start")
         end = value.get("end")
-        multiplier = value.get("multiplier", 2)
-
+        multiplier = value.get("multiplier", None)
+        increase_by = value.get("increase_by", None)
         # Generate values in the range
         param_values = []
         current_value = start
         while current_value <= end:
           param_values.append(current_value)
-          current_value *= multiplier
+          if multiplier:
+            current_value *= multiplier
+          elif increase_by:
+            current_value += increase_by
+          else:
+            raise ValueError("In sweep mode, user must provide either multiplier or increase_by value.")
 
         # Add the generated values to the param set
         param_sets[key] = param_values

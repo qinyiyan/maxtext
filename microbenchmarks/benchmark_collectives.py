@@ -332,7 +332,7 @@ def all_gather_benchmark(
       return jax.lax.all_gather(x, "ici", tiled=True)
 
     sharded_matrix = jax.device_put(
-        matrix, jax.sharding.NamedSharding(mesh, P(None, "ici"))
+        matrix, jax.sharding.NamedSharding(mesh, P(None, None))
     )
     jitted_op = jax.jit(all_gather_ici_op)
     ici_average_time_ms = simple_timeit(
@@ -384,7 +384,6 @@ def all_gather_benchmark_calculate_metrics(
     achieved_bandwidth_gbyte_s = (
         matrix_size_gbyte
         * (ici_size - 1)
-        / ici_size
         / (ici_average_time_ms / 1e3)
     )
     ici_bandwidth_gbyte_s = achieved_bandwidth_gbyte_s
@@ -563,7 +562,7 @@ def all_to_all_benchmark(
       )
 
     sharded_matrix = jax.device_put(
-        matrix, jax.sharding.NamedSharding(mesh, P(None, "ici"))
+        matrix, jax.sharding.NamedSharding(mesh, P(None, None))
     )
     jitted_op = jax.jit(all_to_all_ici_op)
     ici_average_time_ms = simple_timeit(
@@ -613,7 +612,6 @@ def all_to_all_benchmark_calculate_metrics(
     achieved_bandwidth_gbyte_s = (
         matrix_size_gbyte
         * (ici_size - 1)
-        / ici_size
         / ici_size
         / (ici_average_time_ms / 1e3)
     )
