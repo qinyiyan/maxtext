@@ -16,6 +16,8 @@ from typing import Any, Callable, Dict, List, Tuple
 from benchmark_utils import maybe_write_metrics_file
 import jax
 import yaml
+import ray
+from concurrent.futures import ThreadPoolExecutor
 
 COLLECTIVE_BENCHMARK_MAP = {
     "all_gather": "benchmark_collectives.all_gather_benchmark",
@@ -124,15 +126,18 @@ def preprocess_benchmark_param(
       benchmark_param["dtype"] = dtype_mapping[dtype_str]
     else:
       raise ValueError(f"Unsupported dtype: {dtype_str}")
-
+  
   # Handle "SAME_AS_" parameters.
+  # For example, if "n" is "SAME_AS_m", then "n" will
+  # be set to the same value as "m".
   for key, value in benchmark_param.items():
     if isinstance(value, str) and value.startswith("SAME_AS_"):
-      try:
-        same_as_key = value.split("SAME_AS_")[1]
-        benchmark_param[key] = benchmark_param[same_as_key]
-      except KeyError:
-        print(f"Error: Key '{same_as_key}' not found for '{key}'")
+      same_as_key = value.split("SAME_AS_")[1]
+      if same_as_key not in benchmark_param:
+        raise ValueError(
+            f"Parameter {same_as_key} not found in the benchmark_param."
+        )
+      benchmark_param[key] = benchmark_param[same_as_key]
   return benchmark_param
 
 
@@ -148,22 +153,17 @@ def generate_benchmark_params_sweeping(
         key = key[:-6]  # Remove the last 6 characters (i.e., '_range')
 
       if isinstance(value, dict):
-        # Extract the range and multiplier, or increase_by value.
+        # Extract the range and multiplier
         start = value.get("start")
         end = value.get("end")
-        multiplier = value.get("multiplier", None)
-        increase_by = value.get("increase_by", None)
+        multiplier = value.get("multiplier", 2)
+
         # Generate values in the range
         param_values = []
         current_value = start
         while current_value <= end:
           param_values.append(current_value)
-          if multiplier:
-            current_value *= multiplier
-          elif increase_by:
-            current_value += increase_by
-          else:
-            raise ValueError("In sweep mode, user must provide either multiplier or increase_by value.")
+          current_value *= multiplier
 
         # Add the generated values to the param set
         param_sets[key] = param_values
@@ -286,7 +286,7 @@ def run_single_benchmark(benchmark_config: Dict[str, Any]):
     write_to_csv(f"{csv_path}/{test_name}.csv", calculate_metrics_results)
 
 
-def main(config_path: str):
+def main(config_path: str, multithreaded: bool):
   """Main function."""
   # Load configuration
   config = get_benchmark_config(config_path)
@@ -294,9 +294,98 @@ def main(config_path: str):
   if not benchmarks or not isinstance(benchmarks, list):
     raise ValueError("Configuration must contain a 'benchmarks' list.")
 
-  for benchmark_config in benchmarks:
-    run_single_benchmark(benchmark_config)
+  if multithreaded: 
+    ray.init(
+        runtime_env=ray.runtime_env.RuntimeEnv(
+            address="ray://tpu-ray-cluster-head-svc:10001",
+            env_vars={
+                "XLA_IR_DEBUG": "1",
+                "XLA_HLO_DEBUG": "1",
+                "PJRT_DEVICE": "TPU",
+                # "LIBTPU_INIT_ARGS": "--xla_tpu_scoped_vmem_limit_kib=25602",
+            },
+        )
+    )
 
+    # Calculate the number of TPU hosts within our Ray cluster...
+    #num_hosts = int(ray.available_resources()["TPU"]) // 4
+    print(ray.available_resources())
+    #print("Num hosts detected: %d", num_hosts)
+
+    for benchmark_config in benchmarks:
+      run_benchmark_multithreaded(benchmark_config)
+
+  else:
+    for benchmark_config in benchmarks:
+      run_single_benchmark(benchmark_config)
+
+
+def run_benchmark_multithreaded(benchmark_config):
+  # Extract benchmark details
+  benchmark_name = benchmark_config.get("benchmark_name")
+  benchmark_params = benchmark_config.get("benchmark_params", [])
+  benchmark_sweep_params = benchmark_config.get("benchmark_sweep_params", {})
+  if benchmark_sweep_params:
+    benchmark_params += generate_benchmark_params_sweeping(
+        benchmark_sweep_params
+    )
+  csv_path = benchmark_config.get("csv_path")
+  if not benchmark_name:
+    raise ValueError("Each benchmark must have a 'benchmark_name'.")
+
+  # Get the benchmark function
+  benchmark_func, calculate_metrics_func = get_benchmark_functions(
+      benchmark_name
+  )
+
+  print(f"\n{'=' * 30}Starting benchmark '{benchmark_name}'{'=' * 30}\n")
+
+  # Start a trace if requested
+  test_name = f"t_{benchmark_name}_" + "".join(
+      random.choices(string.ascii_uppercase + string.digits, k=10)
+  )
+
+  # Preprocess benchmark parameters
+  preprocessed_benchmark_params = [
+      preprocess_benchmark_param(benchmark_param) 
+      for benchmark_param in benchmark_params
+  ]
+  calculate_metrics_results = []
+
+  # Calculate the number of TPU hosts within our Ray cluster...
+  num_hosts = int(ray.available_resources()["TPU"]) // 4
+  # print(ray.available_resources())
+  print(f"Num hosts detected: {num_hosts}")
+
+  # Run benchmark_func in multiple threads
+  with ThreadPoolExecutor(max_workers=num_hosts) as executor:
+    # Create a mapping of futures to their corresponding parameters
+    future_to_param = {
+        executor.submit(benchmark_func, **benchmark_param): benchmark_param
+        for benchmark_param in preprocessed_benchmark_params
+    }
+
+    # Process each future as it completes
+    for future in future_to_param:
+        benchmark_param = future_to_param[future]  # Retrieve the corresponding benchmark_param
+        benchmark_results = future.result()  # Get the result from the future
+
+        # Filter benchmark_results to include only keys present in calculate_metrics_func
+        calculate_metrics_params = inspect.signature(calculate_metrics_func).parameters
+        filtered_benchmark_results = {
+            key: value
+            for key, value in benchmark_results.items()
+            if key in calculate_metrics_params
+        }
+
+        # Call calculate_metrics_func with the filtered results and benchmark_param
+        metadata, metrics = calculate_metrics_func(
+            **benchmark_param, **filtered_benchmark_results
+        )
+        calculate_metrics_results.append({"metadata": metadata, "metrics": metrics})
+
+  if csv_path:
+    write_to_csv(f"{csv_path}/{test_name}.csv", calculate_metrics_results)
 
 if __name__ == "__main__":
   parser = argparse.ArgumentParser(
@@ -308,5 +397,11 @@ if __name__ == "__main__":
       required=True,
       help="Path to the YAML configuration file.",
   )
+  parser.add_argument(
+      "--multithreaded",
+      type=bool,
+      default=False,
+      help="Path to the YAML configuration file.",
+  )
   args = parser.parse_args()
-  main(args.config)
+  main(args.config, args.multithreaded)
