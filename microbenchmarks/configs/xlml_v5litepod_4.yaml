@@ -23,6 +23,10 @@ benchmarks:
   benchmark_sweep_params:
   - {m_range: {start: 1024, end: 29696, increase_by: 1024}, k: "SAME_AS_m", n: "SAME_AS_m"}
   xlml_metrics_dir: "/tmp/microbenchmarks/outputs"
+- benchmark_name: "single_host_naive_matmul"
+  benchmark_sweep_params:
+  - {m_range: {start: 1024, end: 29696, increase_by: 1024}, k: "SAME_AS_m", n: "SAME_AS_m"}
+  xlml_metrics_dir: "/tmp/microbenchmarks/outputs"
 - benchmark_name: "multilayer_collective_matmul"
   benchmark_sweep_params:
   - {m_range: {start: 1024, end: 29696, increase_by: 1024}, k: "SAME_AS_m", n: "SAME_AS_m"}

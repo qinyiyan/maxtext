@@ -143,9 +143,9 @@ def single_host_naive_matmul(m: int, k: int, n: int) -> Dict[str, Any]:
   lhs = jnp.arange(np.prod((m, k))).reshape((m, k)).astype(jnp.bfloat16)
   rhs = jnp.arange(np.prod((k, n))).reshape((k, n)).astype(jnp.bfloat16)
   # Put both matrices on device 0 without any sharding
-  device = jax.devices()[0]
-  lhs = jax.device_put(lhs, device)
-  rhs = jax.device_put(rhs, device)
+#   device = jax.devices()[0]
+#   lhs = jax.device_put(lhs, device)
+#   rhs = jax.device_put(rhs, device)
   jitted_f = jax.jit(f)
   # Run once
   output = jitted_f(lhs, rhs)
