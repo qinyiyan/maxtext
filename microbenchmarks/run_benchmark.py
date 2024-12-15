@@ -156,15 +156,22 @@ def generate_benchmark_params_sweeping(
         # Extract the range and multiplier
         start = value.get("start")
         end = value.get("end")
-        multiplier = value.get("multiplier", 2)
-
+        multiplier = value.get("multiplier", None)
+        increase_by = value.get("increase_by", None)
         # Generate values in the range
         param_values = []
         current_value = start
         while current_value <= end:
           param_values.append(current_value)
-          current_value *= multiplier
-
+          if multiplier:
+            current_value *= multiplier
+          elif increase_by:
+            current_value += increase_by
+          else:
+            raise ValueError(
+                "In sweep mode, user must provide either multiplier or"
+                " increase_by value."
+            )
         # Add the generated values to the param set
         param_sets[key] = param_values
       else:
