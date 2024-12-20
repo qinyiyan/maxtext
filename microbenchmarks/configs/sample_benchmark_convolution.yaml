@@ -5,6 +5,8 @@ benchmarks:
   - {input_size: 2048, kernel_size_range: {start: 3, end: 128, multiplier: 2}, padding_mode: "valid"}
   - {input_size: 2048, kernel_size: 127, padding_mode: "full"}
   xlml_metrics_dir: "/tmp/microbenchmarks/convolution"
+  trace_dir: "/tmp/microbenchmarks/convolution"
+  csv_path: "/tmp/microbenchmarks/convolution"
 - benchmark_name: "scipy_signal_convolve"
   benchmark_sweep_params:
   - {input_size_range: {start: 256, end: 1024, multiplier: 2}, kernel_size: 3, dimension: 2, padding_mode: "same"}
